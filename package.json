@@ -23,9 +23,12 @@
     "build": "tsc",
     "ci": "npm run build && npm run test",
     "test": "vitest run",
-    "dev": "vitest"
+    "dev": "vitest",
+    "local-release": "changeset version && changeset publish",
+    "prepublishOnly": "npm run ci"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.30.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   }
