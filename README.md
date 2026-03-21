@@ -1,0 +1,1 @@
+# AccNum - A high-precision number library for JavaScript

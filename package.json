@@ -1,0 +1,32 @@
+{
+  "name": "accnum",
+  "version": "0.0.0",
+  "description": "High-accuracy numbers library",
+  "keywords": [
+    "library",
+    "numbers",
+    "accuracy"
+  ],
+  "homepage": "https://github.com/THSlimes/AccNum#readme",
+  "bugs": {
+    "url": "https://github.com/THSlimes/AccNum/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/THSlimes/AccNum.git"
+  },
+  "license": "ISC",
+  "author": "THSlimes",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "ci": "npm run build && npm run test",
+    "test": "vitest run",
+    "dev": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}
