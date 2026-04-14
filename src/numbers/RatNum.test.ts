@@ -2,29 +2,29 @@ import { test, expect } from "vitest"
 import RatNum from "./RatNum.js"
 
 test("denominator must not be negative", () => {
-    const frac1 = new RatNum(1n, -2n);
+    const frac1 = RatNum.from(1n, -2n);
     expect(frac1.numerator).toBe(-1n);
     expect(frac1.denominator).toBe(2n);
 
-    const frac2 = new RatNum(-1n, 2n);
+    const frac2 = RatNum.from(-1n, 2n);
     expect(frac2.numerator).toBe(-1n);
     expect(frac2.denominator).toBe(2n);
 
-    const frac3 = new RatNum(1n, 2n);
+    const frac3 = RatNum.from(1n, 2n);
     expect(frac3.numerator).toBe(1n);
     expect(frac3.denominator).toBe(2n);
 });
 
 test("simplify fractions", () => {
-    const frac1 = new RatNum(2n, 4n);
+    const frac1 = RatNum.from(2n, 4n);
     expect(frac1.numerator).toBe(1n);
     expect(frac1.denominator).toBe(2n);
 
-    const frac2 = new RatNum(111n, 999n);
+    const frac2 = RatNum.from(111n, 999n);
     expect(frac2.numerator).toBe(1n);
     expect(frac2.denominator).toBe(9n);
 
-    const frac3 = new RatNum(120n, 6n);
+    const frac3 = RatNum.from(120n, 6n);
     expect(frac3.numerator).toBe(20n);
     expect(frac3.denominator).toBe(1n);
 });
@@ -56,8 +56,8 @@ test("parsing to RatNum", () => {
 });
 
 test("operations", () => {
-    const half = new RatNum(1n, 2n);
-    const quarter = new RatNum(1n, 4n);
+    const half = RatNum.ONE_HALF;
+    const quarter = RatNum.from(1n, 4n);
 
     const sum = half.add(quarter); // 1/2 + 1/4 = 3/4
     expect(sum.numerator).toBe(3n);
@@ -77,8 +77,8 @@ test("operations", () => {
 });
 
 test("relations", () => {
-    const half = new RatNum(1n, 2n);
-    const quarter = new RatNum(1n, 4n);
+    const half = RatNum.from(1n, 2n);
+    const quarter = RatNum.from(1n, 4n);
 
     expect(half.eq(half)).toBeTruthy();
     expect(half.eq(quarter)).toBeFalsy();

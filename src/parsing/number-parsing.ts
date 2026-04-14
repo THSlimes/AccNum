@@ -1,8 +1,8 @@
 import NumberFormatError from "../numbers/NumberFormatError.js";
 
 const INT_REGEX = /^(-|\+)?[0-9]+$/;
-const FRAC_REGEX = /^((?:-|\+)?[0-9]+)\.([0-9]+)$/;
-const FRAC_ONLY_REGEX = /^(?:-|\+)?\.([0-9]+)$/;
+const DECIMAL_REGEX = /^((?:-|\+)?[0-9]+)\.([0-9]+)$/;
+const DECIMAL_ONLY_REGEX = /^(?:-|\+)?\.([0-9]+)$/;
 
 /**
  * Represents the number input string as `n*10^m`.
@@ -14,14 +14,14 @@ export function asSciInt(s: string): { n: bigint, exp: bigint } {
     let match = s.match(INT_REGEX);
     if (match) return { n: BigInt(s), exp: 0n };
 
-    match = s.match(FRAC_REGEX);
+    match = s.match(DECIMAL_REGEX);
     if (match) {
         const intPart = match[1]!;
         const fracPart = match[2]!;
         return { n: BigInt(intPart + fracPart), exp: BigInt(-fracPart.length) };
     }
 
-    match = s.match(FRAC_ONLY_REGEX);
+    match = s.match(DECIMAL_ONLY_REGEX);
     if (match) {
         const sign = s[0] === '-' ? -1n : 1n;
         const fracPart = match[1]!;

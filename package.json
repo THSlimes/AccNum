@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsc",
     "ci": "npm run build && npm run test",
-    "test": "vitest run",
+    "test": "vitest run --exclude **/*.js",
     "dev": "vitest",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "npm run ci"

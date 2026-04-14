@@ -63,10 +63,10 @@ export interface Div<Other, Out> {
 }
 
 
-export type Field<Other> =
-    Add<Other, Other> &
+export type Field<Other, Out> =
+    Add<Other, Out> &
     AddInv<Other> &
-    Sub<Other, Other> &
-    Mult<Other, Other> &
+    Sub<Other, Out> &
+    Mult<Other, Out> &
     MultInv<Other> &
-    Div<Other, Other>;
+    Div<Other, Out>;

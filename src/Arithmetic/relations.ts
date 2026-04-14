@@ -55,3 +55,12 @@ export type Compare<Other> =
     LtE<Other> &
     Gt<Other> &
     GtE<Other>;
+
+
+export interface PosNeg {
+
+    isPositive(): boolean;
+    isZero(): boolean;
+    isNegative(): boolean;
+
+}
