@@ -1,0 +1,1 @@
+export const JSON_TYPE_KEY = "__type";

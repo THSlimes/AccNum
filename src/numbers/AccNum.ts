@@ -1,9 +1,12 @@
 import type { Field } from "../Arithmetic/operators.js";
 import type { Compare, PosNeg } from "../Arithmetic/relations.js";
+import type { JSONValue } from "../JSONValue.js";
+import ToJSON from "../JSONValue.js";
+import { JSON_TYPE_KEY } from "../SharedConstants.js";
 import RatNum, { type ToRatNum } from "./RatNum.js";
 
 type ToAccNum = AccNum | ToRatNum;
-export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum>, PosNeg {
+export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum>, PosNeg, ToJSON {
 
     public static readonly NEG_ONE = new AccNum(RatNum.NEG_ONE, 0n);
     public static readonly ZERO = new AccNum(RatNum.ZERO, 0n);
@@ -137,6 +140,25 @@ export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum
     }
 
 
+    public toJSON(): JSONValue {
+        return {
+            [JSON_TYPE_KEY]: this.constructor.name,
+            frac: this.frac.toJSON(),
+            exp: ToJSON.bigintToJSON(this.exp)
+        };
+    }
+
+
+
+    public static fromJSON(json: JSONValue): AccNum {
+        if (typeof json !== "object" || json === null) throw TypeError("not an object");
+        else if (!(JSON_TYPE_KEY in json)) throw new TypeError(`missing ${JSON_TYPE_KEY} key`);
+        else if (json[JSON_TYPE_KEY] !== this.name) throw new TypeError(`not a serialized ${this.name}`);
+        else if (!("frac" in json)) throw new TypeError("missing num property");
+        else if (!("exp" in json)) throw new TypeError("missing denom property");
+
+        return new AccNum(RatNum.fromJSON(json.frac), ToJSON.bigintFromJSON(json.exp));
+    }
 
     public static from(v: ToAccNum): AccNum {
         if (v instanceof AccNum) return v;

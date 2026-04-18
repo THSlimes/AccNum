@@ -1,7 +1,10 @@
 import ArithmeticError from "../Arithmetic/ArithmeticError.js";
 import type { Field } from "../Arithmetic/operators.js";
 import type { Compare, PosNeg } from "../Arithmetic/relations.js";
+import type { JSONValue } from "../JSONValue.js";
+import ToJSON from "../JSONValue.js";
 import { asSciInt } from "../parsing/number-parsing.js";
+import { JSON_TYPE_KEY } from "../SharedConstants.js";
 import NumberFormatError from "./NumberFormatError.js";
 
 function bigintGCD(a: bigint, b: bigint): bigint {
@@ -22,7 +25,7 @@ function bigintAbs(a: bigint): bigint {
 
 
 export type ToRatNum = RatNum | number | bigint | string;
-export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum>, PosNeg {
+export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum>, PosNeg, ToJSON {
 
     public static readonly NEG_ONE = new RatNum(-1n, 1n);
     public static readonly ZERO = new RatNum(0n, 1n);
@@ -142,7 +145,26 @@ export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum
         return !this.lt(other);
     }
 
+
+    public toJSON(): JSONValue {
+        return {
+            [JSON_TYPE_KEY]: this.constructor.name,
+            num: ToJSON.bigintToJSON(this.numerator),
+            denom: ToJSON.bigintToJSON(this.denominator)
+        };
+    }
+
     
+
+    public static fromJSON(json:JSONValue): RatNum {
+        if (typeof json !== "object" || json === null) throw TypeError("not an object");
+        else if (!(JSON_TYPE_KEY in json)) throw new TypeError(`missing ${JSON_TYPE_KEY} key`);
+        else if (json[JSON_TYPE_KEY] !== this.name) throw new TypeError(`not a serialized ${this.name}`);
+        else if (!("num" in json)) throw new TypeError("missing num property");
+        else if (!("denom" in json)) throw new TypeError("missing denom property");
+
+        return new RatNum(ToJSON.bigintFromJSON(json.num), ToJSON.bigintFromJSON(json.denom));
+    }
 
     public static from(v: ToRatNum): RatNum;
     public static from(v: number, w: number): RatNum;

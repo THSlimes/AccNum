@@ -25,7 +25,18 @@ test("frac and exp correct", () => {
 });
 
 
-
 test("field properties", () => {
     testFieldProps(AccNum.ZERO, AccNum.ONE, ACC_NUM_SUPPLIER);
+});
+
+
+test("(de)serialization", () => {
+
+    for (let i = 0; i < 1000; i ++) {
+        const n = ACC_NUM_SUPPLIER();
+        const remade = AccNum.fromJSON(n.toJSON());
+
+        expect(remade.eq(n)).toBeTruthy();
+    }
+
 });

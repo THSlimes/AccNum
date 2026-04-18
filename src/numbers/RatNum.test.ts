@@ -1,5 +1,7 @@
 import { test, expect } from "vitest"
 import RatNum from "./RatNum.js"
+import { testFieldProps } from "../test-util/number-properties.js";
+import { getRandomRatNum } from "../test-util/suppliers.js";
 
 test("denominator must not be negative", () => {
     const frac1 = RatNum.from(1n, -2n);
@@ -87,4 +89,20 @@ test("relations", () => {
     expect(half.lte(quarter)).toBeFalsy();
     expect(half.gt(quarter)).toBeTruthy();
     expect(half.gte(quarter)).toBeTruthy();
+});
+
+const RAT_NUM_SUPPLIER = getRandomRatNum();
+test("field properties", () => {
+    testFieldProps(RatNum.ZERO, RatNum.ONE, RAT_NUM_SUPPLIER);
+});
+
+test("(de)serialization", () => {
+
+    for (let i = 0; i < 1000; i ++) {
+        const n = RAT_NUM_SUPPLIER();
+        const remade = RatNum.fromJSON(n.toJSON());
+
+        expect(remade.eq(n)).toBeTruthy();
+    }
+
 });
