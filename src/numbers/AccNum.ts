@@ -3,11 +3,14 @@ import type { Compare, PosNeg } from "../Arithmetic/relations.js";
 import type { JSONValue } from "../serialization/JSONValue.js";
 import ToJSON from "../serialization/JSONValue.js";
 import type ToNumber from "../serialization/ToNumber.js";
+import type ToString from "../serialization/ToString.js";
 import { JSON_TYPE_KEY } from "../SharedConstants.js";
 import RatNum, { type ToRatNum } from "./RatNum.js";
 
+type AccNumStringFormat = "sci" | "approx" | "latex";
+
 type ToAccNum = AccNum | ToRatNum;
-export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum>, PosNeg, ToJSON, ToNumber {
+export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum>, PosNeg, ToJSON, ToNumber, ToString<AccNumStringFormat> {
 
     public static readonly NEG_ONE = new AccNum(RatNum.NEG_ONE, 0n);
     public static readonly ZERO = new AccNum(RatNum.ZERO, 0n);
@@ -157,6 +160,17 @@ export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum
         else if (expNumber === -Infinity) return 0;
         else if (expNumber >= 0) return fracNumber * (1 << expNumber);
         else return fracNumber / (1 << -expNumber);
+    }
+
+    public toString(options: AccNumStringFormat = "sci"): string {
+        switch (options) {
+            case "sci":
+                return `${this.frac.toString("fraction")} × 2^${this.exp}`;
+            case "approx":
+                return this.toNumber().toString();
+            case "latex":
+                return `${this.frac.toString("latex")} \times 2^{${this.exp}}`;
+        }
     }
 
 

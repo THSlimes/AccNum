@@ -7,6 +7,7 @@ import { asSciInt } from "../parsing/number-parsing.js";
 import { JSON_TYPE_KEY } from "../SharedConstants.js";
 import NumberFormatError from "./NumberFormatError.js";
 import type ToNumber from "../serialization/ToNumber.js";
+import type ToString from "../serialization/ToString.js";
 
 function bigintGCD(a: bigint, b: bigint): bigint {
     while (b !== 0n) {
@@ -20,13 +21,14 @@ function bigintGCD(a: bigint, b: bigint): bigint {
 }
 
 function bigintAbs(a: bigint): bigint {
-    if (a < 0n) a = -a;
-    return a;
+    return a < 0n ? -a : a;
 }
 
 
+type RatNumStringFormat = "fraction" | "approx" | "latex";
+
 export type ToRatNum = RatNum | number | bigint | string;
-export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum>, PosNeg, ToJSON, ToNumber {
+export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum>, PosNeg, ToJSON, ToNumber, ToString<RatNumStringFormat> {
 
     public static readonly NEG_ONE = new RatNum(-1n, 1n);
     public static readonly ZERO = new RatNum(0n, 1n);
@@ -165,6 +167,17 @@ export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum
         }
 
         return Number(num) / Number(denom);
+    }
+
+    public toString(options: RatNumStringFormat = "fraction"): string {
+        switch (options) {
+            case "fraction":
+                return `${this.a}/${this.b}`;
+            case "approx":
+                return this.toNumber().toString();
+            case "latex":
+                return `\\frac{${this.a}}{${this.b}}`;
+        }
     }
 
 
