@@ -1,12 +1,13 @@
 import type { Field } from "../Arithmetic/operators.js";
 import type { Compare, PosNeg } from "../Arithmetic/relations.js";
-import type { JSONValue } from "../JSONValue.js";
-import ToJSON from "../JSONValue.js";
+import type { JSONValue } from "../serialization/JSONValue.js";
+import ToJSON from "../serialization/JSONValue.js";
+import type ToNumber from "../serialization/ToNumber.js";
 import { JSON_TYPE_KEY } from "../SharedConstants.js";
 import RatNum, { type ToRatNum } from "./RatNum.js";
 
 type ToAccNum = AccNum | ToRatNum;
-export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum>, PosNeg, ToJSON {
+export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum>, PosNeg, ToJSON, ToNumber {
 
     public static readonly NEG_ONE = new AccNum(RatNum.NEG_ONE, 0n);
     public static readonly ZERO = new AccNum(RatNum.ZERO, 0n);
@@ -146,6 +147,16 @@ export default class AccNum implements Field<ToAccNum, AccNum>, Compare<ToAccNum
             frac: this.frac.toJSON(),
             exp: ToJSON.bigintToJSON(this.exp)
         };
+    }
+
+    public toNumber(): number {
+        const fracNumber = this.frac.toNumber();
+        const expNumber = Number(this.exp);
+
+        if (expNumber === Infinity) return Infinity;
+        else if (expNumber === -Infinity) return 0;
+        else if (expNumber >= 0) return fracNumber * (1 << expNumber);
+        else return fracNumber / (1 << -expNumber);
     }
 
 

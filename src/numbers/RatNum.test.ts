@@ -1,7 +1,7 @@
 import { test, expect } from "vitest"
 import RatNum from "./RatNum.js"
 import { testFieldProps } from "../test-util/number-properties.js";
-import { getRandomRatNum } from "../test-util/suppliers.js";
+import { getRandomNumber, getRandomRatNum } from "../test-util/suppliers.js";
 
 test("denominator must not be negative", () => {
     const frac1 = RatNum.from(1n, -2n);
@@ -91,18 +91,40 @@ test("relations", () => {
     expect(half.gte(quarter)).toBeTruthy();
 });
 
+
 const RAT_NUM_SUPPLIER = getRandomRatNum();
 test("field properties", () => {
     testFieldProps(RatNum.ZERO, RatNum.ONE, RAT_NUM_SUPPLIER);
 });
 
-test("(de)serialization", () => {
+
+test("to/from JSON", () => {
 
     for (let i = 0; i < 1000; i ++) {
         const n = RAT_NUM_SUPPLIER();
         const remade = RatNum.fromJSON(n.toJSON());
 
         expect(remade.eq(n)).toBeTruthy();
+    }
+
+});
+
+const BIG_NUMBER_SUPPLIER = getRandomNumber(-1_000_000_000, 1_000_000_000);
+const SMALL_NUMBER_SUPPLIER = getRandomNumber(-.01, .01);
+test("to/from number", () => {
+
+    for (let i = 0; i < 1000; i ++) {
+        const n = BIG_NUMBER_SUPPLIER();
+        const remade = RatNum.from(n).toNumber();
+
+        expect(remade).toBe(n);
+    }
+
+    for (let i = 0; i < 1000; i ++) {
+        const n = SMALL_NUMBER_SUPPLIER();
+        const remade = RatNum.from(n).toNumber();
+
+        expect(remade).toBe(n);
     }
 
 });

@@ -1,11 +1,12 @@
 import ArithmeticError from "../Arithmetic/ArithmeticError.js";
 import type { Field } from "../Arithmetic/operators.js";
 import type { Compare, PosNeg } from "../Arithmetic/relations.js";
-import type { JSONValue } from "../JSONValue.js";
-import ToJSON from "../JSONValue.js";
+import type { JSONValue } from "../serialization/JSONValue.js";
+import ToJSON from "../serialization/JSONValue.js";
 import { asSciInt } from "../parsing/number-parsing.js";
 import { JSON_TYPE_KEY } from "../SharedConstants.js";
 import NumberFormatError from "./NumberFormatError.js";
+import type ToNumber from "../serialization/ToNumber.js";
 
 function bigintGCD(a: bigint, b: bigint): bigint {
     while (b !== 0n) {
@@ -25,7 +26,7 @@ function bigintAbs(a: bigint): bigint {
 
 
 export type ToRatNum = RatNum | number | bigint | string;
-export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum>, PosNeg, ToJSON {
+export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum>, PosNeg, ToJSON, ToNumber {
 
     public static readonly NEG_ONE = new RatNum(-1n, 1n);
     public static readonly ZERO = new RatNum(0n, 1n);
@@ -154,9 +155,21 @@ export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum
         };
     }
 
-    
+    public toNumber(): number {
+        let num = this.a;
+        let denom = this.b;
 
-    public static fromJSON(json:JSONValue): RatNum {
+        while (!isFinite(Number(num)) && !isFinite(Number(num))) {
+            num = num << 1n;
+            denom = denom << 1n;
+        }
+
+        return Number(num) / Number(denom);
+    }
+
+
+
+    public static fromJSON(json: JSONValue): RatNum {
         if (typeof json !== "object" || json === null) throw TypeError("not an object");
         else if (!(JSON_TYPE_KEY in json)) throw new TypeError(`missing ${JSON_TYPE_KEY} key`);
         else if (json[JSON_TYPE_KEY] !== this.name) throw new TypeError(`not a serialized ${this.name}`);
@@ -173,7 +186,26 @@ export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum
         if (v instanceof RatNum) return v;
         else if (typeof v === "number") {
             if (typeof w === "number") return this.from(`${v} / ${w}`);
-            else return this.from(v.toString());
+            else {
+                const isNeg = v < 0;
+                let str = Math.abs(v).toString(2);
+
+                let [intPart, fracPart] = str.split('.');
+                intPart ??= "";
+                fracPart ??= "";
+
+                str = intPart + fracPart;
+
+                let num = 0n;
+                for (let i = 0; i < str.length; i++) {
+                    num = num << 1n;
+                    if (str[i] === '1') num |= 1n;
+                }
+
+                let denom = 1n << BigInt(fracPart.length);
+
+                return new RatNum(isNeg ? -num : num, denom);
+            }
         }
         else if (typeof v === "bigint") {
             if (typeof w === "bigint") return new RatNum(v, w);

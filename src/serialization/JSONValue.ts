@@ -1,4 +1,4 @@
-import { JSON_TYPE_KEY } from "./SharedConstants.js";
+import { JSON_TYPE_KEY } from "./../SharedConstants.js";
 
 export type JSONValue = string | number | boolean | null | JSONValue[] | { [k: string]: JSONValue };
 

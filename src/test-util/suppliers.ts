@@ -18,10 +18,13 @@ export namespace Supplier {
         return () => bagList[Math.floor(Math.random() * bagList.length)]!;
     }
 
-
-
 }
 
+
+export function getRandomNumber(lower: number, upper: number): Supplier<number> {
+    const diff = upper - lower;
+    return () => lower + Math.random() * diff;
+}
 
 export function getRandomBigInt(lower: bigint, upper: bigint): Supplier<bigint> {
     return () => {
