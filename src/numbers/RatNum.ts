@@ -196,9 +196,18 @@ export default class RatNum implements Field<ToRatNum, RatNum>, Compare<ToRatNum
     public static from(v: number, w: number): RatNum;
     public static from(v: bigint, w: bigint): RatNum;
     public static from(v: ToRatNum, w?: number | bigint): RatNum {
+
         if (v instanceof RatNum) return v;
         else if (typeof v === "number") {
-            if (typeof w === "number") return this.from(`${v} / ${w}`);
+            if (isNaN(v)) throw new RangeError("cannot convert NaN");
+            else if (!isFinite(v)) throw new RangeError("cannot convert (negative) infinity");
+
+            if (typeof w === "number") {
+                if (isNaN(w)) throw new RangeError("cannot convert NaN");
+                else if (!isFinite(w)) throw new RangeError("cannot convert (negative) infinity");
+
+                return this.from(`${v} / ${w}`);
+            }
             else {
                 const isNeg = v < 0;
                 let str = Math.abs(v).toString(2);

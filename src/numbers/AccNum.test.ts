@@ -44,8 +44,10 @@ test("to/from JSON", () => {
 
 const BIG_NUMBER_SUPPLIER = getRandomNumber(-1_000_000_000, 1_000_000_000);
 const SMALL_NUMBER_SUPPLIER = getRandomNumber(-.01, .01);
+const FLOAT_SPECIAL = [Infinity, -Infinity, NaN];
 test("to/from number", () => {
 
+    // big numbers
     for (let i = 0; i < 1000; i ++) {
         const n = BIG_NUMBER_SUPPLIER();
         const remade = AccNum.from(n).toNumber();
@@ -53,11 +55,17 @@ test("to/from number", () => {
         expect(remade).toBe(n);
     }
 
+    // small numbers
     for (let i = 0; i < 1000; i ++) {
         const n = SMALL_NUMBER_SUPPLIER();
         const remade = AccNum.from(n).toNumber();
         
         expect(remade).toBe(n);
+    }
+
+    // float special values
+    for (const n of FLOAT_SPECIAL) {
+        expect(() => AccNum.from(n)).toThrow();
     }
 
 });

@@ -100,7 +100,7 @@ test("field properties", () => {
 
 test("to/from JSON", () => {
 
-    for (let i = 0; i < 1000; i ++) {
+    for (let i = 0; i < 1000; i++) {
         const n = RAT_NUM_SUPPLIER();
         const remade = RatNum.fromJSON(n.toJSON());
 
@@ -111,20 +111,26 @@ test("to/from JSON", () => {
 
 const BIG_NUMBER_SUPPLIER = getRandomNumber(-1_000_000_000, 1_000_000_000);
 const SMALL_NUMBER_SUPPLIER = getRandomNumber(-.01, .01);
+const FLOAT_SPECIAL = [Infinity, -Infinity, NaN];
 test("to/from number", () => {
 
-    for (let i = 0; i < 1000; i ++) {
+    for (let i = 0; i < 1000; i++) {
         const n = BIG_NUMBER_SUPPLIER();
         const remade = RatNum.from(n).toNumber();
 
         expect(remade).toBe(n);
     }
 
-    for (let i = 0; i < 1000; i ++) {
+    for (let i = 0; i < 1000; i++) {
         const n = SMALL_NUMBER_SUPPLIER();
         const remade = RatNum.from(n).toNumber();
 
         expect(remade).toBe(n);
+    }
+
+    // float special values
+    for (const n of FLOAT_SPECIAL) {
+        expect(() => RatNum.from(n)).toThrow();
     }
 
 });
